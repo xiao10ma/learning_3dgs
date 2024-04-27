@@ -1,0 +1,2 @@
+# learning_3dgs
+基于ZJU彭思达老师的learning_nerf框架，实现的原始3dgs
