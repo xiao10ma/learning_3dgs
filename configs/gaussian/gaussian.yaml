@@ -1,0 +1,71 @@
+task: 3dgs
+gpus: [0]
+exp_name: '3dgs'
+scene: 'ficus'
+
+# module path
+train_dataset_module: lib.datasets.gaussian.synthetic 
+test_dataset_module: lib.datasets.gaussian.synthetic
+network_module: lib.networks.gaussian.model
+loss_module: lib.train.losses.gaussian
+evaluator_module: lib.evaluators.gaussian
+visualizer_module: lib.visualizers.gaussian
+
+task_arg:
+    eval: True
+
+modelParam:
+    sh_degree: 3
+    white_bkgd: True # use white background
+    resolution: -1
+    resolution_scales: [1.0]
+    data_device: "cuda"
+
+optParam:
+    iterations: 30000
+    position_lr_init: 0.00016
+    position_lr_final: 0.0000016
+    position_lr_delay_mult: 0.01
+    position_lr_max_steps: 30000
+    feature_lr: 0.0025
+    opacity_lr: 0.05
+    scaling_lr: 0.005
+    rotation_lr: 0.001
+    percent_dense: 0.01
+    lambda_dssim: 0.2
+    densification_interval: 100
+    opacity_reset_interval: 3000
+    densify_from_iter: 500
+    densify_until_iter: 15000
+    densify_grad_threshold: 0.0002
+    random_background: False
+
+pipeParam:
+    convert_SHs_python: False
+    compute_cov3D_python: False
+    debug: False
+
+train_dataset:
+    data_root: 'data/nerf_synthetic'
+    split: 'train'
+    cams: [0, -1, 1] # input cameras, you can use this variable to select training images
+
+test_dataset:
+    data_root: 'data/nerf_synthetic'
+    split: 'test'
+    cams: [0, -1, 100]
+
+train:
+    batch_size: 1
+    lr: 5e-4
+    weight_decay: 0.
+    epoch: 400
+    num_workers: 4
+
+test:
+    batch_size: 1
+
+save_ep: 10
+eval_ep: 5       # 10000 iterations
+save_latest_ep: 5 # 2500 iterations
+log_interval: 10
