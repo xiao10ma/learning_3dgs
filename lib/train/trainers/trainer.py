@@ -41,13 +41,8 @@ class Trainer(object):
                 batch[k] = batch[k].to(self.device)
         return batch
 
-<<<<<<< HEAD
     def train(self, epoch, data_loader, recorder):
         max_iter = len(data_loader)
-=======
-    def train(self, epoch, data_loader, optimizer, recorder):
-        max_iter = len(data_loader)     # 500, epoch_iter
->>>>>>> 4a350a7c283355cc1ed6b0c324e459d813b441de
         self.network.train()
         end = time.time()
         for iteration, batch in enumerate(data_loader):
@@ -64,7 +59,6 @@ class Trainer(object):
             # optimizer.zero_grad()
             # self.network.net.gaussians.optimizer.zero_grad(set_to_none = True)
             loss.backward()
-<<<<<<< HEAD
             # torch.nn.utils.clip_grad_value_(self.network.parameters(), 40)
             with torch.no_grad():
                 self.network.net.densify_prune_opt(recorder.step)
@@ -100,40 +94,6 @@ class Trainer(object):
                     # record loss_stats and image_dict
                     recorder.update_image_stats(image_stats)
                     recorder.record('train')
-=======
-            torch.nn.utils.clip_grad_value_(self.network.parameters(), 40)  # 梯度裁剪，[-40, 40]
-            optimizer.step()
-
-            if cfg.local_rank > 0:
-                continue
-
-            # data recording stage: loss_stats, time, image_stats
-            recorder.step += 1
-
-            loss_stats = self.reduce_loss_stats(loss_stats)
-            recorder.update_loss_stats(loss_stats)
-
-            batch_time = time.time() - end
-            end = time.time()
-            recorder.batch_time.update(batch_time)
-            recorder.data_time.update(data_time)
-
-            self.global_step += 1
-            if iteration % cfg.log_interval == 0 or iteration == (max_iter - 1):
-                # print training state
-                eta_seconds = recorder.batch_time.global_avg * (max_iter - iteration)
-                eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
-                lr = optimizer.param_groups[0]['lr']
-                memory = torch.cuda.max_memory_allocated() / 1024.0 / 1024.0
-
-                training_state = '  '.join(['eta: {}', '{}', 'lr: {:.6f}', 'max_mem: {:.0f}'])
-                training_state = training_state.format(eta_string, str(recorder), lr, memory)
-                print(training_state)
-
-                # record loss_stats and image_dict
-                recorder.update_image_stats(image_stats)
-                recorder.record('train')
->>>>>>> 4a350a7c283355cc1ed6b0c324e459d813b441de
 
     def val(self, epoch, data_loader, evaluator=None, recorder=None):
         self.network.eval()
